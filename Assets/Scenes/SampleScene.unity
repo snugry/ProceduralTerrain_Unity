@@ -247,8 +247,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 409291501}
-  m_LocalRotation: {x: -0.26421273, y: 0.6401474, z: 0.2520669, w: 0.67591816}
-  m_LocalPosition: {x: -508.68842, y: -1090.353, z: 695.94025}
+  m_LocalRotation: {x: 0.03890675, y: 0.93141, z: 0.34758547, w: -0.10072779}
+  m_LocalPosition: {x: 1555.9088, y: -127.78786, z: 1584.6456}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -363,7 +363,7 @@ MonoBehaviour:
   widthX: 2048
   widthZ: 2048
   height: 400
-  isIsland: 1
+  mapType: 1
   parts: 512
   scale: 20
   textureBorder: 65
@@ -709,8 +709,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052208165}
-  m_LocalRotation: {x: -0.26421273, y: 0.6401474, z: 0.2520669, w: 0.67591816}
-  m_LocalPosition: {x: -508.68842, y: -1090.353, z: 695.94025}
+  m_LocalRotation: {x: -0.22177944, y: 0.6494894, z: 0.20850646, w: 0.69678015}
+  m_LocalPosition: {x: -596.0338, y: -1077.1434, z: 776.5679}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

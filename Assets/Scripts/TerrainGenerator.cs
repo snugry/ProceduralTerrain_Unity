@@ -10,13 +10,24 @@ public enum TerrainType
     dirt
 }
 
+[System.Serializable]
+public enum MapType
+{
+    hills,
+    island,
+    island2,
+    river,
+    river2,
+    lake
+}
+
 public class TerrainGenerator : MonoBehaviour
 {
     public int widthX;
     public int widthZ;
     public int height;
 
-    public bool isIsland;
+    public MapType mapType;
 
     public int parts;
 
@@ -78,7 +89,7 @@ public class TerrainGenerator : MonoBehaviour
         //_terrain = Terrain.CreateTerrainGameObject(_terrainData);
 
         _terrainData.heightmapResolution = parts;
-        _terrainData.SetHeights(0, 0, GenerateNoiseMap(parts,parts, scale, 0 ,0, waves, isIsland));
+        _terrainData.SetHeights(0, 0, GenerateNoiseMap(parts,parts, scale, 0 ,0, waves, mapType));
 
         
         _terrainData.SetAlphamaps(0, 0, CalculateSplatMap(textureBorder, textureOffset));
@@ -92,7 +103,7 @@ public class TerrainGenerator : MonoBehaviour
         
     }
 
-    private float[,] GenerateNoiseMap(int mapDepth, int mapWidth, float scale, float offsetX, float offsetZ, Wave[] waves, bool isIsland)
+    private float[,] GenerateNoiseMap(int mapDepth, int mapWidth, float scale, float offsetX, float offsetZ, Wave[] waves, MapType mapType)
     {
         // create an empty noise map with the mapDepth and mapWidth coordinates
         float[,] noiseMap = new float[mapDepth, mapWidth];
@@ -119,12 +130,34 @@ public class TerrainGenerator : MonoBehaviour
                 }
                 // normalize the noise value so that it is within 0 and 1
                 noise /= normalization;
-                if (isIsland)
-                {
-                    float factorX = (centerX - Mathf.Abs(centerX - xIndex)) / centerX;
-                    float factorZ = (centerZ - Mathf.Abs(centerZ - zIndex)) / centerZ;
 
-                    noise = noise * factorX * factorZ;
+                float factor = 0f;
+                float factorX = 0f;
+                float factorZ = 0f;
+
+                switch (mapType)
+                {
+                    case MapType.island:
+                        factor = (centerX - Vector2.Distance(new Vector2(centerX, centerZ), new Vector2(xIndex, zIndex))) / centerX;
+                        noise = noise * factor;
+                        break;
+                    case MapType.island2:
+                        factorX = (centerX - Mathf.Abs(centerX - xIndex)) / centerX;
+                        factorZ = (centerZ - Mathf.Abs(centerZ - zIndex)) / centerZ;
+                        noise = noise * factorX * factorZ;
+                        break;
+                    case MapType.lake:
+                        factor =  Vector2.Distance(new Vector2(centerX, centerZ), new Vector2(xIndex, zIndex)) / centerX;
+                        noise = noise * factor;
+                        break;
+                    case MapType.river:
+                        factorX = Mathf.Abs(centerX - xIndex) / centerX;
+                        noise = noise * factorX;
+                        break;
+                    case MapType.river2:
+                        factorZ = Mathf.Abs(centerZ - zIndex) / centerZ;
+                        noise = noise * factorZ;
+                        break;
                 }
 
                 noiseMap[zIndex, xIndex] = noise;
@@ -258,13 +291,13 @@ public class TerrainGenerator : MonoBehaviour
                 switch (_terrainType[z_terrainType, x_terrainType])
                 {
                     case (int)TerrainType.grass:
-                        if(GetNoiseMap(x + 1700, z + 5178, 0.6f) > 0.90f)
+                        if(GetNoiseMap(x + 1700, z + 5178, 0.6f) > 0.86f)
                         {
                             addTree = true;
                         }
                         break;
                     case (int)TerrainType.dirt:
-                        if (GetNoiseMap(x + 1700, z + 5178, 0.6f) > 0.65f)
+                        if (GetNoiseMap(x + 1700, z + 5178, 0.6f) > 0.70f)
                         {
                             addTree = true;
                         }
@@ -275,7 +308,7 @@ public class TerrainGenerator : MonoBehaviour
                     TreeInstance treeTemp = new TreeInstance();
                     treeTemp.position = new Vector3((float)x / (float)_terrainData.heightmapResolution, 0, (float)z / (float)_terrainData.heightmapResolution);
 
-                    treeTemp.prototypeIndex = 0;
+                    treeTemp.prototypeIndex = Random.Range(0,_terrainData.treePrototypes.Length);
                     treeTemp.widthScale = 1f;
                     treeTemp.heightScale = 1f;
                     treeTemp.color = Color.white;
