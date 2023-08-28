@@ -40,12 +40,11 @@ public class TerrainGenerator : MonoBehaviour
     [SerializeField]
     private Wave[] waves;
 
-    public Texture2D terrainTexGrass;
-    public Texture2D terrainTexSand;
-    public Texture2D terrainTexRocks;
-    public Texture2D terrainTexDirt;
-
     public GameObject terrain;
+
+    public bool createStartPlatform;
+
+    public int startPlatformSize;
 
     private TerrainData _terrainData;
 
@@ -53,6 +52,12 @@ public class TerrainGenerator : MonoBehaviour
     private float stepZ;
 
     private int[,] _terrainType;
+
+    private int _treesForbiddenMinX = 0;
+    private int _treesForbiddenMinZ = 0;
+
+    private int _treesForbiddenMaxX = 0;
+    private int _treesForbiddenMaxZ = 0;
 
 
     // Start is called before the first frame update
@@ -67,26 +72,6 @@ public class TerrainGenerator : MonoBehaviour
 
         _terrainType = new int[parts+1, parts+1];
 
-       /* TerrainLayer terrainLayerGrass = new TerrainLayer();
-        terrainLayerGrass.diffuseTexture = terrainTexGrass;
-
-        TerrainLayer terrainLayerSand = new TerrainLayer();
-        terrainLayerSand.diffuseTexture = terrainTexSand;
-
-        TerrainLayer terrainLayerRocks = new TerrainLayer();
-        terrainLayerRocks.diffuseTexture = terrainTexRocks;
-
-        TerrainLayer terrainLayerDirt = new TerrainLayer();
-        terrainLayerDirt.diffuseTexture = terrainTexDirt;
-
-        TerrainLayer[] layers = new TerrainLayer[4];
-        layers[0] = terrainLayerGrass;
-        layers[1] = terrainLayerSand;
-        layers[2] = terrainLayerRocks;
-        layers[3] = terrainLayerDirt;
-        _terrainData.terrainLayers = layers;*/
-
-        //_terrain = Terrain.CreateTerrainGameObject(_terrainData);
 
         _terrainData.heightmapResolution = parts;
         _terrainData.SetHeights(0, 0, GenerateNoiseMap(parts,parts, scale, 0 ,0, waves, mapType));
@@ -109,6 +94,11 @@ public class TerrainGenerator : MonoBehaviour
         float[,] noiseMap = new float[mapDepth, mapWidth];
         float centerX = mapWidth / 2;
         float centerZ = mapDepth / 2;
+
+        float startPlatformNoiseVal = 0f;
+        int startPlatformNoiseZ = 0;
+        int startPlatformNoiseX = 0;
+
         for (int zIndex = 0; zIndex < mapDepth; zIndex++)
         {
             for (int xIndex = 0; xIndex < mapWidth; xIndex++)
@@ -161,7 +151,55 @@ public class TerrainGenerator : MonoBehaviour
                 }
 
                 noiseMap[zIndex, xIndex] = noise;
+
+                if(createStartPlatform && startPlatformNoiseVal == 0f && noise > ((textureBorder + textureOffset) / height) && Random.value < 0.001f)
+                {
+                    Debug.Log(noise + " # " + noise * height);
+                    startPlatformNoiseVal = noise;
+                    startPlatformNoiseZ = zIndex;
+                    startPlatformNoiseX = xIndex;              
+                }
             }
+        }
+
+        if (createStartPlatform && startPlatformNoiseVal > 0.0f)
+        {
+            for (int zIndex = startPlatformNoiseZ - startPlatformSize / 2; zIndex < startPlatformNoiseZ + startPlatformSize; zIndex++)
+            {
+                for (int xIndex = startPlatformNoiseX - startPlatformSize / 2; xIndex < startPlatformNoiseX + startPlatformSize; xIndex++)
+                {
+                    if(xIndex > mapDepth || zIndex > mapDepth)
+                    {
+                        break;
+                    }
+                    float distance = Mathf.Sqrt((xIndex - startPlatformNoiseX) * (xIndex - startPlatformNoiseX) +
+                        (zIndex - startPlatformNoiseZ) * (zIndex - startPlatformNoiseZ));
+                    if(distance <= (float)(startPlatformSize / 2))
+                    {
+                        noiseMap[zIndex, xIndex] = startPlatformNoiseVal;
+                    }
+                    
+                    if(_treesForbiddenMinZ == 0)
+                    {
+                        _treesForbiddenMinZ = zIndex;
+                    }
+                    else if(zIndex > _treesForbiddenMaxZ)
+                    {
+                        _treesForbiddenMaxZ = zIndex;
+                    }
+
+                    if(_treesForbiddenMinX == 0)
+                    {
+                        _treesForbiddenMinX = xIndex;
+                    }
+                    else if(xIndex > _treesForbiddenMaxX)
+                    {
+                        _treesForbiddenMaxX = xIndex;
+                    }
+                }
+            }
+
+            Debug.Log("Trees forbidden: " + _treesForbiddenMinX + " " + _treesForbiddenMaxX + " " + _treesForbiddenMinZ + " " + _treesForbiddenMaxZ);
         }
         return noiseMap;
     }
@@ -277,6 +315,7 @@ public class TerrainGenerator : MonoBehaviour
         Terrain _terrain = terrain.GetComponent<Terrain>();
         _terrainData.treeInstances = new TreeInstance[0];
 
+        Debug.Log(_terrainData.heightmapResolution);
 
         for (int x = 0; x < _terrainData.heightmapResolution; x++)
         {
@@ -303,6 +342,12 @@ public class TerrainGenerator : MonoBehaviour
                         }
                         break;
                 }
+
+                if(x_terrainType > _treesForbiddenMinX && x_terrainType < _treesForbiddenMaxX && z_terrainType > _treesForbiddenMinZ && z_terrainType < _treesForbiddenMaxZ)
+                {
+                    addTree = false;
+                }
+
                 if (addTree)
                 {
                     TreeInstance treeTemp = new TreeInstance();

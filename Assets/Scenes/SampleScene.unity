@@ -148,7 +148,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 779
+      value: 580.49
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 5e9e851c0e142814dac026a256ba2ac0, type: 3}
       propertyPath: m_LocalRotation.w
@@ -190,6 +190,7 @@ GameObject:
   m_Component:
   - component: {fileID: 409291503}
   - component: {fileID: 409291502}
+  - component: {fileID: 409291504}
   m_Layer: 0
   m_Name: Water4AdvancedReflectionSceneCamera
   m_TagString: Untagged
@@ -247,13 +248,22 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 409291501}
-  m_LocalRotation: {x: 0.03890675, y: 0.93141, z: 0.34758547, w: -0.10072779}
-  m_LocalPosition: {x: 1555.9088, y: -127.78786, z: 1584.6456}
+  m_LocalRotation: {x: -0.21451212, y: 0.15750681, z: 0.03627878, w: 0.9632549}
+  m_LocalPosition: {x: 676.2655, y: -271.6209, z: -17.092285}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!45 &409291504
+Skybox:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 409291501}
+  m_Enabled: 1
+  m_CustomSkybox: {fileID: 0}
 --- !u!1 &439247627
 GameObject:
   m_ObjectHideFlags: 0
@@ -362,12 +372,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   widthX: 2048
   widthZ: 2048
-  height: 400
+  height: 350
   mapType: 1
   parts: 512
   scale: 20
-  textureBorder: 65
-  textureOffset: 5
+  textureBorder: 60
+  textureOffset: 7
   waves:
   - seed: -1
     frequency: 1
@@ -378,11 +388,9 @@ MonoBehaviour:
   - seed: -1
     frequency: 0.15
     amplitude: 6
-  terrainTexGrass: {fileID: 2800000, guid: bd748b9521e44494db570e53244e67f8, type: 3}
-  terrainTexSand: {fileID: 2800000, guid: 867bf9368095115469213f084458c656, type: 3}
-  terrainTexRocks: {fileID: 2800000, guid: 18214e9d6af6248559d501391856f1c7, type: 3}
-  terrainTexDirt: {fileID: 2800000, guid: ef5c51cfa2ce46043a41a376b560c525, type: 3}
   terrain: {fileID: 439247627}
+  createStartPlatform: 1
+  startPlatformSize: 12
 --- !u!4 &474493423
 Transform:
   m_ObjectHideFlags: 0
@@ -709,8 +717,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052208165}
-  m_LocalRotation: {x: -0.22177944, y: 0.6494894, z: 0.20850646, w: 0.69678015}
-  m_LocalPosition: {x: -596.0338, y: -1077.1434, z: 776.5679}
+  m_LocalRotation: {x: 0.13637026, y: 0.030101854, z: 0.0024420377, w: -0.99019754}
+  m_LocalPosition: {x: 1147.782, y: 6.6999054, z: 427.0464}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
