@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 public enum TerrainType
@@ -95,10 +96,6 @@ public class TerrainGenerator : MonoBehaviour
         float centerX = mapWidth / 2;
         float centerZ = mapDepth / 2;
 
-        float startPlatformNoiseVal = 0f;
-        int startPlatformNoiseZ = 0;
-        int startPlatformNoiseX = 0;
-
         for (int zIndex = 0; zIndex < mapDepth; zIndex++)
         {
             for (int xIndex = 0; xIndex < mapWidth; xIndex++)
@@ -121,9 +118,9 @@ public class TerrainGenerator : MonoBehaviour
                 // normalize the noise value so that it is within 0 and 1
                 noise /= normalization;
 
-                float factor = 0f;
-                float factorX = 0f;
-                float factorZ = 0f;
+                float factor;
+                float factorX;
+                float factorZ;
 
                 switch (mapType)
                 {
@@ -151,55 +148,65 @@ public class TerrainGenerator : MonoBehaviour
                 }
 
                 noiseMap[zIndex, xIndex] = noise;
-
-                if(createStartPlatform && startPlatformNoiseVal == 0f && noise > ((textureBorder + textureOffset) / height) && Random.value < 0.001f)
-                {
-                    Debug.Log(noise + " # " + noise * height);
-                    startPlatformNoiseVal = noise;
-                    startPlatformNoiseZ = zIndex;
-                    startPlatformNoiseX = xIndex;              
-                }
             }
         }
 
-        if (createStartPlatform && startPlatformNoiseVal > 0.0f)
+        if (createStartPlatform)
         {
-            for (int zIndex = startPlatformNoiseZ - startPlatformSize / 2; zIndex < startPlatformNoiseZ + startPlatformSize; zIndex++)
-            {
-                for (int xIndex = startPlatformNoiseX - startPlatformSize / 2; xIndex < startPlatformNoiseX + startPlatformSize; xIndex++)
-                {
-                    if(xIndex > mapDepth || zIndex > mapDepth)
-                    {
-                        break;
-                    }
-                    float distance = Mathf.Sqrt((xIndex - startPlatformNoiseX) * (xIndex - startPlatformNoiseX) +
-                        (zIndex - startPlatformNoiseZ) * (zIndex - startPlatformNoiseZ));
-                    if(distance <= (float)(startPlatformSize / 2))
-                    {
-                        noiseMap[zIndex, xIndex] = startPlatformNoiseVal;
-                    }
-                    
-                    if(_treesForbiddenMinZ == 0)
-                    {
-                        _treesForbiddenMinZ = zIndex;
-                    }
-                    else if(zIndex > _treesForbiddenMaxZ)
-                    {
-                        _treesForbiddenMaxZ = zIndex;
-                    }
+            noiseMap = AddStartPlatform(noiseMap, mapDepth, mapWidth);
+        }
+        return noiseMap;
+    }
 
-                    if(_treesForbiddenMinX == 0)
-                    {
-                        _treesForbiddenMinX = xIndex;
-                    }
-                    else if(xIndex > _treesForbiddenMaxX)
-                    {
-                        _treesForbiddenMaxX = xIndex;
-                    }
+    private float[,] AddStartPlatform(float[,] noiseMap, int mapDepth, int mapWidth)
+    {
+        float startPlatformNoiseVal = 0.0f;
+        int startPlatformNoiseZ = 0;
+        int startPlatformNoiseX = 0;
+        while (startPlatformNoiseVal == 0.0f)
+        {
+            startPlatformNoiseZ = (int)(Random.value * mapDepth);
+            startPlatformNoiseX = (int)(Random.value * mapWidth);
+            if (noiseMap[startPlatformNoiseZ, startPlatformNoiseX] > ((textureBorder + textureOffset) / height))
+            {
+                startPlatformNoiseVal = noiseMap[startPlatformNoiseZ, startPlatformNoiseX];
+                Debug.Log("Platform at: " + startPlatformNoiseZ + " / " + startPlatformNoiseX + " with height: " + startPlatformNoiseVal);
+            }
+        }
+
+        for (int zIndex = startPlatformNoiseZ - startPlatformSize / 2; zIndex < startPlatformNoiseZ + startPlatformSize; zIndex++)
+        {
+            for (int xIndex = startPlatformNoiseX - startPlatformSize / 2; xIndex < startPlatformNoiseX + startPlatformSize; xIndex++)
+            {
+                if (xIndex > mapDepth || zIndex > mapDepth)
+                {
+                    break;
+                }
+                float distance = Mathf.Sqrt((xIndex - startPlatformNoiseX) * (xIndex - startPlatformNoiseX) +
+                    (zIndex - startPlatformNoiseZ) * (zIndex - startPlatformNoiseZ));
+                if (distance <= (float)(startPlatformSize / 2))
+                {
+                    noiseMap[zIndex, xIndex] = startPlatformNoiseVal;
+                }
+
+                if (_treesForbiddenMinZ == 0)
+                {
+                    _treesForbiddenMinZ = zIndex;
+                }
+                else if (zIndex > _treesForbiddenMaxZ)
+                {
+                    _treesForbiddenMaxZ = zIndex;
+                }
+
+                if (_treesForbiddenMinX == 0)
+                {
+                    _treesForbiddenMinX = xIndex;
+                }
+                else if (xIndex > _treesForbiddenMaxX)
+                {
+                    _treesForbiddenMaxX = xIndex;
                 }
             }
-
-            Debug.Log("Trees forbidden: " + _treesForbiddenMinX + " " + _treesForbiddenMaxX + " " + _treesForbiddenMinZ + " " + _treesForbiddenMaxZ);
         }
         return noiseMap;
     }

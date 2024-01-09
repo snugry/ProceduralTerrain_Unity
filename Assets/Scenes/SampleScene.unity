@@ -390,7 +390,7 @@ MonoBehaviour:
     amplitude: 6
   terrain: {fileID: 439247627}
   createStartPlatform: 1
-  startPlatformSize: 12
+  startPlatformSize: 20
 --- !u!4 &474493423
 Transform:
   m_ObjectHideFlags: 0
@@ -717,8 +717,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052208165}
-  m_LocalRotation: {x: 0.13637026, y: 0.030101854, z: 0.0024420377, w: -0.99019754}
-  m_LocalPosition: {x: 1147.782, y: 6.6999054, z: 427.0464}
+  m_LocalRotation: {x: -0.18606754, y: -0.031887263, z: 0.0039929333, w: -0.9820113}
+  m_LocalPosition: {x: 518.7771, y: -129.8929, z: 901.05664}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
